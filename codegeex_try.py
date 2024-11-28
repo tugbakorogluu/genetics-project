@@ -4,6 +4,11 @@ import google.generativeai as genai
 # API anahtarınızı çevresel değişken olarak alıyoruz
 api_key = os.getenv("GOOGLE_API_KEY")
 
+
+
+
+
+
 if not api_key:
     raise ValueError("Please set the GOOGLE_API_KEY environment variable")
 
