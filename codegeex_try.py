@@ -53,3 +53,6 @@ response = model.generate_content(story_description)
 
 # Yanıtı yazdırıyoruz
 print(response.text)
+
+#export GOOGLE_API_KEY="AIzaSyB0exwU5sT2vHPC1YbLKbgZUkVW1ZxlW6g"
+#python codegeex_try.py
