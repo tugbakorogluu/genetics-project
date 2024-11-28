@@ -15,7 +15,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Çok satırlı metni tanımlıyoruz
 story_description = """
-Buraya metin gelecek
+Buraya metin gelecek deneme123
 """
 
 # Modeli kullanarak içeriği oluşturuyoruz
