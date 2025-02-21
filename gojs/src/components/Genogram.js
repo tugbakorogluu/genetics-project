@@ -8,497 +8,461 @@ var genoData;
 
 function initDiagram() {
   const $ = go.GraphObject.make;
-  // set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
+  // GoJS lisans anahtarını burada belirtiyoruz
   go.Diagram.licenseKey = "adsfewfwaefasdfdsfs";
+  
+  // GoJS diyagramını oluşturuyoruz
   const diagram = $(go.Diagram, {
-    initialDocumentSpot: go.Spot.Bottom,
-    initialViewportSpot: go.Spot.Bottom,
-    "undoManager.isEnabled": true, // must be set to allow for model change listening
-    initialAutoScale: go.Diagram.Uniform,
+    initialDocumentSpot: go.Spot.Bottom, // Diyagramın başlangıç konumunu belirler
+    initialViewportSpot: go.Spot.Bottom, // Görüntüleme alanının başlangıç konumu
+    "undoManager.isEnabled": true, // Geri alma (undo) işlemlerini etkinleştirir
+    initialAutoScale: go.Diagram.Uniform, // Diyagramın otomatik ölçeklenmesini sağlar
     "clickCreatingTool.archetypeNodeData": {
       text: "new node",
       color: "lightblue",
     },
     model: $(go.GraphLinksModel, {
-      linkKeyProperty: "key", // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+      linkKeyProperty: "key", // Bağlantılar için benzersiz bir anahtar belirlenmesi gerekir
     }),
 
+    // Seçili düğümün etrafına bir süsleme (adornment) ekler
     nodeSelectionAdornmentTemplate: $(
       go.Adornment,
       "Auto",
-      { layerName: "Grid" }, // the predefined layer that is behind everything else
+      { layerName: "Grid" }, // Süslemeyi arka plana yerleştirir
       $(go.Shape, "Circle", { fill: "#c1cee3", stroke: null }),
-      $(go.Placeholder, { margin: 2 })
+      $(go.Placeholder, { margin: 2 }) // Seçili düğümün etrafına boşluk bırakır
     ),
-    // use a custom layout, defined below
+    
+    // Özel bir yerleşim düzeni kullanıyoruz
     layout: $(GenogramLayout, {
-      direction: 90,
-      layerSpacing: 30,
-      columnSpacing: 10,
+      direction: 90, // Düğümlerin yönünü 90 derece olarak ayarlar (dikey düzen)
+      layerSpacing: 30, // Katmanlar arasındaki boşluğu ayarlar
+      columnSpacing: 10, // Sütunlar arasındaki boşluğu ayarlar
     }),
   });
 
+  // Düğümlerin dolgu rengini belirleyen fonksiyon
   function attrFill(a) {
     switch (a) {
       case "A":
-        return "#00af54"; // green
+        return "#00af54"; // Yeşil
       case "B":
-        return "#f27935"; // orange
+        return "#f27935"; // Turuncu
       case "C":
-        return "#d4071c"; // red
+        return "#d4071c"; // Kırmızı
       case "D":
-        return "#70bdc2"; // cyan
+        return "#70bdc2"; // Camgöbeği
       case "E":
-        return "#fcf384"; // gold
+        return "#fcf384"; // Altın sarısı
       case "F":
-        return "#e69aaf"; // pink
+        return "#e69aaf"; // Pembe
       case "G":
-        return "#08488f"; // blue
+        return "#08488f"; // Mavi
       case "H":
-        return "#866310"; // brown
+        return "#866310"; // Kahverengi
       case "I":
-        return "#9270c2"; // purple
+        return "#9270c2"; // Mor
       case "J":
-        return "#a3cf62"; // chartreuse
+        return "#a3cf62"; // Açık yeşil
       case "K":
-        return "#91a4c2"; // lightgray bluish
+        return "#91a4c2"; // Açık gri-mavi
       case "L":
-        return "#af70c2"; // magenta
+        return "#af70c2"; // Eflatun
       case "S":
-        return "#000000"; // black
+        return "#000000"; // Siyah
       case "M":
-        return "#d4071c"; // red
+        return "#d4071c"; // Kırmızı
       default:
-        return "transparent";
+        return "transparent"; // Varsayılan olarak şeffaf
     }
   }
-  var tlsq = go.Geometry.parse("F M1 1 l19 0 0 19 -19 0z");
-  var trsq = go.Geometry.parse("F M20 1 l19 0 0 19 -19 0z");
-  var brsq = go.Geometry.parse("F M20 20 l19 0 0 19 -19 0z");
-  var blsq = go.Geometry.parse("F M1 20 l19 0 0 19 -19 0z");
+
+  // Özel şekiller tanımlıyoruz (Karelerin farklı konumları)
+  var tlsq = go.Geometry.parse("F M1 1 l19 0 0 19 -19 0z"); // Sol üst kare
+  var trsq = go.Geometry.parse("F M20 1 l19 0 0 19 -19 0z"); // Sağ üst kare
+  var brsq = go.Geometry.parse("F M20 20 l19 0 0 19 -19 0z"); // Sağ alt kare
+  var blsq = go.Geometry.parse("F M1 20 l19 0 0 19 -19 0z"); // Sol alt kare
+
+  // Çapraz çizgi (üzeri çizili şekil)
   var slash = go.Geometry.parse(
-    "F M38 0 L40 0 40 2 2 40 0 40 0 38z" + "F M40 38 L40 40 38 40 0 2 0 0 2 0z"
+    "F M38 0 L40 0 40 2 2 40 0 40 0 38z" + 
+    "F M40 38 L40 40 38 40 0 2 0 0 2 0z"
   );
+
+  // Artı işareti (çapraz kare)
   var plus = go.Geometry.parse(
     "F M18 2 L20 0 22 2 22 38 20 40 18 38z" +
-      "F M2 22 L0 20 2 18 38 18 40 20 38 22z"
+    "F M2 22 L0 20 2 18 38 18 40 20 38 22z"
   );
+
+  // Erkek düğümleri için özel şekil belirleyen fonksiyon
   function maleGeometry(a) {
     switch (a) {
       case "A":
-        return tlsq;
+        return tlsq; // Sol üst kare
       case "B":
-        return tlsq;
+        return tlsq; // Sol üst kare
       case "C":
-        return tlsq;
+        return tlsq; // Sol üst kare
       case "D":
-        return trsq;
+        return trsq; // Sağ üst kare
       case "E":
-        return trsq;
+        return trsq; // Sağ üst kare
       case "F":
-        return trsq;
+        return trsq; // Sağ üst kare
       case "G":
-        return brsq;
+        return brsq; // Sağ alt kare
       case "H":
-        return brsq;
+        return brsq; // Sağ alt kare
       case "I":
-        return brsq;
+        return brsq; // Sağ alt kare
       case "J":
-        return blsq;
+        return blsq; // Sol alt kare
       case "K":
-        return blsq;
+        return blsq; // Sol alt kare
       case "L":
-        return blsq;
+        return blsq; // Sol alt kare
       case "S":
-        return slash;
+        return slash; // Çapraz çizgi (üzeri çizili)
       case "M":
-        return plus;
+        return plus; // Artı işareti
       default:
-        return tlsq;
-    }
-  }
-  var tlarc = go.Geometry.parse("F M20 20 B 180 90 20 20 19 19 z");
-  var trarc = go.Geometry.parse("F M20 20 B 270 90 20 20 19 19 z");
-  var brarc = go.Geometry.parse("F M20 20 B 0 90 20 20 19 19 z");
-  var blarc = go.Geometry.parse("F M20 20 B 90 90 20 20 19 19 z");
-  function femaleGeometry(a) {
-    switch (a) {
-      case "A":
-        return tlarc;
-      case "B":
-        return tlarc;
-      case "C":
-        return tlarc;
-      case "D":
-        return trarc;
-      case "E":
-        return trarc;
-      case "F":
-        return trarc;
-      case "G":
-        return brarc;
-      case "H":
-        return brarc;
-      case "I":
-        return brarc;
-      case "J":
-        return blarc;
-      case "K":
-        return blarc;
-      case "L":
-        return blarc;
-      case "S":
-        return slash;
-      case "M":
-        return plus;
-      default:
-        return tlarc;
+        return tlsq; // Varsayılan olarak sol üst kare
     }
   }
 
-  diagram.nodeTemplateMap.add(
-    "M",
-    $(
-      go.Node,
-      "Vertical",
-      {
-        locationSpot: go.Spot.Center,
-        locationObjectName: "ICON",
-        selectionObjectName: "ICON",
-      },
-      $(
-        go.Panel,
-        { name: "ICON" },
-        $(go.Shape, "Square", {
-          width: 40,
-          height: 40,
-          strokeWidth: 2,
-          fill: "white",
-          stroke: "#919191",
-          portId: "",
-        }),
-        $(
-          go.Panel,
-          {
-            itemTemplate: $(
-              go.Panel,
-              $(
-                go.Shape,
-                { stroke: null, strokeWidth: 0 },
-                new go.Binding("fill", "", attrFill),
-                new go.Binding("geometry", "", maleGeometry)
-              )
-            ),
-            margin: 1,
-          },
-          new go.Binding("itemArray", "a")
-        )
-      ),
-      $(
-        go.TextBlock,
-        { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true },
-        new go.Binding("text", "n")
-      )
-    )
-  );
+ // Kadın düğümleri için özel şekiller tanımlanıyor (Kavisli şekiller)
+var tlarc = go.Geometry.parse("F M20 20 B 180 90 20 20 19 19 z"); // Sol üst yay
+var trarc = go.Geometry.parse("F M20 20 B 270 90 20 20 19 19 z"); // Sağ üst yay
+var brarc = go.Geometry.parse("F M20 20 B 0 90 20 20 19 19 z");   // Sağ alt yay
+var blarc = go.Geometry.parse("F M20 20 B 90 90 20 20 19 19 z");  // Sol alt yay
 
-  diagram.nodeTemplateMap.add(
-    "F", // female
-    $(
-      go.Node,
-      "Vertical",
-      {
-        locationSpot: go.Spot.Center,
-        locationObjectName: "ICON",
-        selectionObjectName: "ICON",
-      },
-      $(
-        go.Panel,
-        { name: "ICON" },
-        $(go.Shape, "Circle", {
-          width: 40,
-          height: 40,
-          strokeWidth: 2,
-          fill: "white",
-          stroke: "#a1a1a1",
-          portId: "",
-        }),
-        $(
-          go.Panel,
-          {
-            // for each attribute show a Shape at a particular place in the overall circle
-            itemTemplate: $(
-              go.Panel,
-              $(
-                go.Shape,
-                { stroke: null, strokeWidth: 0 },
-                new go.Binding("fill", "", attrFill),
-                new go.Binding("geometry", "", femaleGeometry)
-              )
-            ),
-            margin: 1,
-          },
-          new go.Binding("itemArray", "a")
-        )
-      ),
-      $(
-        go.TextBlock,
-        { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true },
-        new go.Binding("text", "n")
-      )
-    )
-  );
+// Kadın düğümleri için şekil belirleyen fonksiyon
+function femaleGeometry(a) {
+  switch (a) {
+    case "A":
+    case "B":
+    case "C":
+      return tlarc; // Sol üst yay
+    case "D":
+    case "E":
+    case "F":
+      return trarc; // Sağ üst yay
+    case "G":
+    case "H":
+    case "I":
+      return brarc; // Sağ alt yay
+    case "J":
+    case "K":
+    case "L":
+      return blarc; // Sol alt yay
+    case "S":
+      return slash; // Çapraz çizgi (üzeri çizili)
+    case "M":
+      return plus; // Artı işareti
+    default:
+      return tlarc; // Varsayılan olarak sol üst yay
+  }
+}
 
-  diagram.nodeTemplateMap.add(
-    "N", // Miscarriage
-    $(
-      go.Node,
-      "Vertical",
-      {
-        locationSpot: go.Spot.Center,
-        locationObjectName: "ICON",
-        selectionObjectName: "ICON",
-      },
-      $(
-        go.Panel,
-        { name: "ICON" },
-        $(go.Shape, "Triangle", {
-          width: 40,
-          height: 40,
-          strokeWidth: 2,
-          fill: "white",
-          stroke: "#a1a1a1",
-          portId: "",
-        }),
-        $(
-          go.Panel,
-          {
-            // for each attribute show a Shape at a particular place in the overall circle
-            itemTemplate: $(
-              go.Panel,
-              $(
-                go.Shape,
-                { stroke: null, strokeWidth: 0 },
-                new go.Binding("fill", "", attrFill),
-                new go.Binding("geometry", "", femaleGeometry)
-              )
-            ),
-            margin: 1,
-          },
-          new go.Binding("itemArray", "a")
-        )
-      ),
-      $(
-        go.TextBlock,
-        { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true },
-        new go.Binding("text", "n")
-      )
-    )
-  );
-
-  diagram.nodeTemplateMap.add(
-    "LinkLabel",
-    $(go.Node, {
-      selectable: false,
-      width: 1,
-      height: 1,
-      fromEndSegmentLength: 20,
-    })
-  );
-
-  setupDiagram(diagram, genoData, 4 /* focus on this person */);
-
-  diagram.linkTemplate = // for parent-child relationships
-    $(
-      go.Link,
-      new go.Binding("routing", "routing"),
-      {
-        corner: 5,
-        layerName: "Background",
-        selectable: false,
-        fromSpot: go.Spot.Bottom,
-        toSpot: go.Spot.Top,
-      },
-      $(go.Shape, { stroke: "#424242", strokeWidth: 2 })
-    );
-
-  diagram.linkTemplateMap.add(
-    "Marriage", // for marriage relationships
-    $(
-      go.Link,
-      { selectable: false },
-      $(go.Shape, { strokeWidth: 2.5, stroke: "#5d8cc1" /* blue */ })
-    )
-  );
-
-  // define a simple Node template
-  diagram.nodeTemplate = $(
+// Erkek düğüm şablonunu oluşturuyoruz
+diagram.nodeTemplateMap.add(
+  "M", // Erkek düğümü için tanımlama
+  $(
     go.Node,
-    "Auto", // the Shape will go around the TextBlock
-    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(
-      go.Point.stringify
-    ),
+    "Vertical",
+    {
+      locationSpot: go.Spot.Center, // Düğümün merkezini konum noktası olarak belirler
+      locationObjectName: "ICON",
+      selectionObjectName: "ICON",
+    },
     $(
-      go.Shape,
-      "Rectangle",
-      { name: "SHAPE", fill: "white", strokeWidth: 0 },
-      // Shape.fill is bound to Node.data.color
-      new go.Binding("fill", "color")
+      go.Panel,
+      { name: "ICON" },
+      $(go.Shape, "Square", {
+        width: 40,
+        height: 40,
+        strokeWidth: 2,
+        fill: "white",
+        stroke: "#919191",
+        portId: "", // Bağlantı noktası ID (varsayılan olarak boş)
+      }),
+      $(
+        go.Panel,
+        {
+          // Erkek düğümler için renk ve şekil belirleme paneli
+          itemTemplate: $(
+            go.Panel,
+            $(go.Shape, 
+              { stroke: null, strokeWidth: 0 }, 
+              new go.Binding("fill", "", attrFill), // Renk bağlaması
+              new go.Binding("geometry", "", maleGeometry) // Şekil bağlaması
+            )
+          ),
+          margin: 1,
+        },
+        new go.Binding("itemArray", "a") // Düğümün niteliklerini alır
+      )
     ),
     $(
       go.TextBlock,
-      { margin: 8, editable: true }, // some room around the text
-      new go.Binding("text").makeTwoWay()
+      { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true }, 
+      new go.Binding("text", "n") // Düğümün adını metin olarak bağlar
     )
+  )
+);
+
+// Kadın düğüm şablonunu oluşturuyoruz
+diagram.nodeTemplateMap.add(
+  "F", // Kadın düğümü için tanımlama
+  $(
+    go.Node,
+    "Vertical",
+    {
+      locationSpot: go.Spot.Center, // Düğümün merkezini konum noktası olarak belirler
+      locationObjectName: "ICON",
+      selectionObjectName: "ICON",
+    },
+    $(
+      go.Panel,
+      { name: "ICON" },
+      $(go.Shape, "Circle", { 
+        width: 40, 
+        height: 40, 
+        strokeWidth: 2, 
+        fill: "white", 
+        stroke: "#a1a1a1", 
+        portId: "" 
+      }),
+      $(
+        go.Panel,
+        {
+          // Kadın düğümler için renk ve şekil belirleme paneli
+          itemTemplate: $(
+            go.Panel,
+            $(go.Shape, 
+              { stroke: null, strokeWidth: 0 }, 
+              new go.Binding("fill", "", attrFill), // Renk bağlaması
+              new go.Binding("geometry", "", femaleGeometry) // Şekil bağlaması
+            )
+          ),
+          margin: 1,
+        },
+        new go.Binding("itemArray", "a") // Düğümün niteliklerini alır
+      )
+    ),
+    $(
+      go.TextBlock,
+      { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true }, 
+      new go.Binding("text", "n") // Düğümün adını metin olarak bağlar
+    )
+  )
+);
+
+
+diagram.nodeTemplateMap.add(
+  "N", // "N" tipi düğüm (Düşük - Miscarriage)
+  $(
+    go.Node,
+    "Vertical",
+    {
+      locationSpot: go.Spot.Center,
+      locationObjectName: "ICON",
+      selectionObjectName: "ICON",
+    },
+    $(
+      go.Panel,
+      { name: "ICON" },
+      $(go.Shape, "Triangle", {
+        width: 40,
+        height: 40,
+        strokeWidth: 2,
+        fill: "white",
+        stroke: "#a1a1a1",
+        portId: "",
+      }),
+      $(
+        go.Panel,
+        {
+          itemTemplate: $(
+            go.Panel,
+            $(
+              go.Shape,
+              { stroke: null, strokeWidth: 0 },
+              new go.Binding("fill", "", attrFill),
+              new go.Binding("geometry", "", femaleGeometry)
+            )
+          ),
+          margin: 1,
+        },
+        new go.Binding("itemArray", "a")
+      )
+    ),
+    $(
+      go.TextBlock,
+      { textAlign: "center", maxSize: new go.Size(80, NaN), editable: true },
+      new go.Binding("text", "n")
+    )
+  )
+);
+
+// Bağlantı etiketi için düğüm şablonu
+diagram.nodeTemplateMap.add(
+  "LinkLabel",
+  $(go.Node, {
+    selectable: false,
+    width: 1,
+    height: 1,
+    fromEndSegmentLength: 20,
+  })
+);
+
+setupDiagram(diagram, genoData, 4 /* odaklanılacak kişi ID'si */);
+
+// Aile bireylerini bağlayan çizgilerin şablonu
+diagram.linkTemplate = 
+  $(
+    go.Link,
+    new go.Binding("routing", "routing"),
+    {
+      corner: 5,
+      layerName: "Background",
+      selectable: false,
+      fromSpot: go.Spot.Bottom,
+      toSpot: go.Spot.Top,
+    },
+    $(go.Shape, { stroke: "#424242", strokeWidth: 2 })
   );
 
-  return diagram;
+// Evlilik ilişkilerini gösteren bağlantı
+diagram.linkTemplateMap.add(
+  "Marriage", 
+  $(
+    go.Link,
+    { selectable: false },
+    $(go.Shape, { strokeWidth: 2.5, stroke: "#5d8cc1" /* mavi */ })
+  )
+);
+
+// Basit düğüm şablonu
+diagram.nodeTemplate = $(
+  go.Node,
+  "Auto",
+  new go.Binding("location", "loc", go.Point.parse).makeTwoWay(
+    go.Point.stringify
+  ),
+  $(
+    go.Shape,
+    "Rectangle",
+    { name: "SHAPE", fill: "white", strokeWidth: 0 },
+    new go.Binding("fill", "color")
+  ),
+  $(
+    go.TextBlock,
+    { margin: 8, editable: true },
+    new go.Binding("text").makeTwoWay()
+  )
+);
+
+return diagram;
 }
 
+// Şemayı başlatma fonksiyonu
 function setupDiagram(diagram, array, focusId) {
-  diagram.model = go.GraphObject.make(go.GraphLinksModel, {
-    // declare support for link label nodes
-    linkLabelKeysProperty: "labelKeys",
-    // this property determines which template is used
-    nodeCategoryProperty: "s",
-    // if a node data object is copied, copy its data.a Array
-    copiesArrays: true,
-    // create all of the nodes for people
-    nodeDataArray: array,
-    linkKeyProperty: "key",
-  });
-  setupMarriages(diagram);
-  setupParents(diagram);
+diagram.model = go.GraphObject.make(go.GraphLinksModel, {
+  linkLabelKeysProperty: "labelKeys",
+  nodeCategoryProperty: "s",
+  copiesArrays: true,
+  nodeDataArray: array,
+  linkKeyProperty: "key",
+});
+setupMarriages(diagram);
+setupParents(diagram);
 
-  var node = diagram.findNodeForKey(focusId);
-  if (node !== null) {
-    diagram.select(node);
-    // remove any spouse for the person under focus:
-    //node.linksConnected.each(function(l) {
-    //  if (!l.isLabeledLink) return;
-    //  l.opacity = 0;
-    //  var spouse = l.getOtherNode(node);
-    //  spouse.opacity = 0;
-    //  spouse.pickable = false;
-    //});
-  }
+var node = diagram.findNodeForKey(focusId);
+if (node !== null) {
+  diagram.select(node);
+}
 }
 
+// İki kişi arasındaki evliliği bulma fonksiyonu
 function findMarriage(diagram, a, b) {
-  // A and B are node keys
-  var nodeA = diagram.findNodeForKey(a);
-  var nodeB = diagram.findNodeForKey(b);
-  if (nodeA !== null && nodeB !== null) {
-    var it = nodeA.findLinksBetween(nodeB); // in either direction
-    while (it.next()) {
-      var link = it.value;
-      // Link.data.category === "Marriage" means it's a marriage relationship
-      if (link.data !== null && link.data.category === "Marriage") return link;
-    }
+var nodeA = diagram.findNodeForKey(a);
+var nodeB = diagram.findNodeForKey(b);
+if (nodeA !== null && nodeB !== null) {
+  var it = nodeA.findLinksBetween(nodeB);
+  while (it.next()) {
+    var link = it.value;
+    if (link.data !== null && link.data.category === "Marriage") return link;
   }
-  return null;
+}
+return null;
 }
 
-// now process the node data to determine marriages
+// Evlilik ilişkilerini şemaya ekleyen fonksiyon
 function setupMarriages(diagram) {
-  var model = diagram.model;
-  var nodeDataArray = model.nodeDataArray;
-  for (var i = 0; i < nodeDataArray.length; i++) {
-    var data = nodeDataArray[i];
-    var key = data.key;
-    var uxs = data.ux;
-    if (uxs !== undefined) {
-      if (typeof uxs === "number") uxs = [uxs];
-      for (var j = 0; j < uxs.length; j++) {
-        var wife = uxs[j];
-        if (key === wife) {
-          // or warn no reflexive marriages
-          continue;
-        }
-        var link = findMarriage(diagram, key, wife);
-        if (link === null) {
-          // add a label node for the marriage link
-          var mlab = { s: "LinkLabel" };
-          model.addNodeData(mlab);
-          // add the marriage link itself, also referring to the label node
-          var mdata = {
-            from: key,
-            to: wife,
-            labelKeys: [mlab.key],
-            category: "Marriage",
-          };
-          model.addLinkData(mdata);
-        }
-      }
-    }
-    var virs = data.vir;
-    if (virs !== undefined) {
-      if (typeof virs === "number") virs = [virs];
-      for (var j = 0; j < virs.length; j++) {
-        var husband = virs[j];
-        if (key === husband) {
-          // or warn no reflexive marriages
-          continue;
-        }
-        var link = findMarriage(diagram, key, husband);
-        if (link === null) {
-          // add a label node for the marriage link
-          var mlab = { s: "LinkLabel" };
-          model.addNodeData(mlab);
-          // add the marriage link itself, also referring to the label node
-          var mdata = {
-            from: key,
-            to: husband,
-            labelKeys: [mlab.key],
-            category: "Marriage",
-          };
-          model.addLinkData(mdata);
-        }
+var model = diagram.model;
+var nodeDataArray = model.nodeDataArray;
+for (var i = 0; i < nodeDataArray.length; i++) {
+  var data = nodeDataArray[i];
+  var key = data.key;
+  var spouses = data.ux || data.vir;
+  if (spouses !== undefined) {
+    if (typeof spouses === "number") spouses = [spouses];
+    for (var j = 0; j < spouses.length; j++) {
+      var spouse = spouses[j];
+      if (key === spouse) continue;
+      var link = findMarriage(diagram, key, spouse);
+      if (link === null) {
+        var mlab = { s: "LinkLabel" };
+        model.addNodeData(mlab);
+        var mdata = {
+          from: key,
+          to: spouse,
+          labelKeys: [mlab.key],
+          category: "Marriage",
+        };
+        model.addLinkData(mdata);
       }
     }
   }
 }
+}
 
-// process parent-child relationships once all marriages are known
+// Ebeveyn-çocuk ilişkilerini şemaya ekleyen fonksiyon
 function setupParents(diagram) {
-  var model = diagram.model;
-  var nodeDataArray = model.nodeDataArray;
-  for (var i = 0; i < nodeDataArray.length; i++) {
-    var data = nodeDataArray[i];
-    var key = data.key;
-    var mother = data.m;
-    var father = data.f;
-    var twin = data.t;
-    if (mother !== undefined && father !== undefined) {
-      var link = findMarriage(diagram, mother, father);
-      if (link === null) {
-        // or warn no known mother or no known father or no known marriage between them
-        if (window.console)
-          window.console.log("unknown marriage: " + mother + " & " + father);
-        continue;
-      }
-      var mdata = link.data;
-      var mlabkey = mdata.labelKeys[0];
-      if (twin !== undefined) {
-        var cdata = { from: mlabkey, to: key, routing: go.Link.Normal };
-      } else {
-        var cdata = { from: mlabkey, to: key, routing: go.Link.Orthogonal };
-      }
-      diagram.model.addLinkData(cdata);
-      // diagram.model.addLinkDataCollection(cdata);
+var model = diagram.model;
+var nodeDataArray = model.nodeDataArray;
+for (var i = 0; i < nodeDataArray.length; i++) {
+  var data = nodeDataArray[i];
+  var key = data.key;
+  var mother = data.m;
+  var father = data.f;
+  var twin = data.t;
+  if (mother !== undefined && father !== undefined) {
+    var link = findMarriage(diagram, mother, father);
+    if (link === null) {
+      if (window.console)
+        window.console.log("Bilinmeyen evlilik: " + mother + " & " + father);
+      continue;
     }
+    var mlabkey = link.data.labelKeys[0];
+    var cdata = { from: mlabkey, to: key, routing: twin !== undefined ? go.Link.Normal : go.Link.Orthogonal };
+    diagram.model.addLinkData(cdata);
   }
+}
 }
 
 function GenogramLayout() {
   go.LayeredDigraphLayout.call(this);
   this.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
-  this.spouseSpacing = 30; // minimum space between spouses
+  this.spouseSpacing = 30; // Eşler arasındaki minimum boşluk
 }
 go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
 
 GenogramLayout.prototype.makeNetwork = function (coll) {
-  // generate LayoutEdges for each parent-child Link
+  // Ebeveyn-çocuk bağlantıları için LayoutEdges oluştur
   var net = this.createNetwork();
   if (coll instanceof go.Diagram) {
     this.add(net, coll.nodes, true);
@@ -511,26 +475,23 @@ GenogramLayout.prototype.makeNetwork = function (coll) {
   return net;
 };
 
-// internal method for creating LayeredDigraphNetwork where husband/wife pairs are represented
-// by a single LayeredDigraphVertex corresponding to the label Node on the marriage Link
+// Eşleri temsil eden LayeredDigraphVertex nesneleri oluşturan yardımcı fonksiyon
 GenogramLayout.prototype.add = function (net, coll, nonmemberonly) {
   var multiSpousePeople = new go.Set();
-  // consider all Nodes in the given collection
   var it = coll.iterator;
   while (it.next()) {
     var node = it.value;
     if (!(node instanceof go.Node)) continue;
     if (!node.isLayoutPositioned || !node.isVisible()) continue;
     if (nonmemberonly && node.containingGroup !== null) continue;
-    // if it's an unmarried Node, or if it's a Link Label Node, create a LayoutVertex for it
+    
     if (node.isLinkLabel) {
-      // get marriage Link
+      // Evlilik bağlantısını al
       var link = node.labeledLink;
       var spouseA = link.fromNode;
       var spouseB = link.toNode;
-      // create vertex representing both husband and wife
+      // Eşleri temsil eden bir düğüm oluştur
       var vertex = net.addNode(node);
-      // now define the vertex size to be big enough to hold both spouses
       vertex.width =
         spouseA.actualBounds.width +
         this.spouseSpacing +
@@ -544,9 +505,6 @@ GenogramLayout.prototype.add = function (net, coll, nonmemberonly) {
         vertex.height / 2
       );
     } else {
-      // don't add a vertex for any married person!
-      // instead, code above adds label node for marriage link
-      // assume a marriage Link has a label Node
       var marriages = 0;
       node.linksConnected.each(function (l) {
         if (l.isLabeledLink) marriages++;
@@ -558,28 +516,24 @@ GenogramLayout.prototype.add = function (net, coll, nonmemberonly) {
       }
     }
   }
-  // now do all Links
+
+  // Bağlantıları işleme al
   it.reset();
   while (it.next()) {
     var link = it.value;
     if (!(link instanceof go.Link)) continue;
     if (!link.isLayoutPositioned || !link.isVisible()) continue;
     if (nonmemberonly && link.containingGroup !== null) continue;
-    // if it's a parent-child link, add a LayoutEdge for it
+    
     if (!link.isLabeledLink) {
-      var parent = net.findVertex(link.fromNode); // should be a label node
+      var parent = net.findVertex(link.fromNode);
       var child = net.findVertex(link.toNode);
       if (child !== null) {
-        // an unmarried child
         net.linkVertexes(parent, child, link);
       } else {
-        // a married child
         link.toNode.linksConnected.each(function (l) {
-          if (!l.isLabeledLink) return; // if it has no label node, it's a parent-child link
-          // found the Marriage Link, now get its label Node
+          if (!l.isLabeledLink) return;
           var mlab = l.labelNodes.first();
-          // parent-child link should connect with the label node,
-          // so the LayoutEdge should connect with the LayoutVertex representing the label node
           var mlabvert = net.findVertex(mlab);
           if (mlabvert !== null) {
             net.linkVertexes(parent, mlabvert, link);
@@ -590,11 +544,10 @@ GenogramLayout.prototype.add = function (net, coll, nonmemberonly) {
   }
 
   while (multiSpousePeople.count > 0) {
-    // find all collections of people that are indirectly married to each other
     var node = multiSpousePeople.first();
     var cohort = new go.Set();
     this.extendCohort(cohort, node);
-    // then encourage them all to be the same generation by connecting them all with a common vertex
+    
     var dummyvert = net.createVertex();
     net.addVertex(dummyvert);
     var marriages = new go.Set();
@@ -604,26 +557,23 @@ GenogramLayout.prototype.add = function (net, coll, nonmemberonly) {
       });
     });
     marriages.each(function (link) {
-      // find the vertex for the marriage link (i.e. for the label node)
       var mlab = link.labelNodes.first();
       var v = net.findVertex(mlab);
       if (v !== null) {
         net.linkVertexes(dummyvert, v, null);
       }
     });
-    // done with these people, now see if there are any other multiple-married people
     multiSpousePeople.removeAll(cohort);
   }
 };
 
-// collect all of the people indirectly married with a person
+// Dolaylı olarak evli olan kişileri topla
 GenogramLayout.prototype.extendCohort = function (coll, node) {
   if (coll.has(node)) return;
   coll.add(node);
   var lay = this;
   node.linksConnected.each(function (l) {
     if (l.isLabeledLink) {
-      // if it's a marriage link, continue with both spouses
       lay.extendCohort(coll, l.fromNode);
       lay.extendCohort(coll, l.toNode);
     }
@@ -633,7 +583,7 @@ GenogramLayout.prototype.extendCohort = function (coll, node) {
 GenogramLayout.prototype.assignLayers = function () {
   go.LayeredDigraphLayout.prototype.assignLayers.call(this);
   var horiz = this.direction === 0.0 || this.direction === 180.0;
-  // for every vertex, record the maximum vertex width or height for the vertex's layer
+  
   var maxsizes = [];
   this.network.vertexes.each(function (v) {
     var lay = v.layer;
@@ -642,8 +592,7 @@ GenogramLayout.prototype.assignLayers = function () {
     var sz = horiz ? v.width : v.height;
     if (sz > max) maxsizes[lay] = sz;
   });
-  // now make sure every vertex has the maximum width or height according to which layer it is in,
-  // and aligned on the left (if horizontal) or the top (if vertical)
+  
   this.network.vertexes.each(function (v) {
     var lay = v.layer;
     var max = maxsizes[lay];
@@ -655,39 +604,42 @@ GenogramLayout.prototype.assignLayers = function () {
       v.height = max;
     }
   });
-  // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
-  // (other than the ones that are the widest or tallest in their respective layer).
 };
 
+
+// GenogramLayout sınıfının commitNodes fonksiyonu, düğüm konumlarını ayarlar.
 GenogramLayout.prototype.commitNodes = function () {
+  // LayeredDigraphLayout'in commitNodes fonksiyonunu çağırarak temel düğüm yerleşimini yapar
   go.LayeredDigraphLayout.prototype.commitNodes.call(this);
-  // position regular nodes
+
+  // Normal düğümleri konumlandırma
   this.network.vertexes.each(function (v) {
     if (v.node !== null && !v.node.isLinkLabel) {
-      v.node.position = new go.Point(v.x, v.y);
+      v.node.position = new go.Point(v.x, v.y); // Düğüm pozisyonunu ayarla
     }
   });
-  // position the spouses of each marriage vertex
+
+  // Her evlilik düğümünün eşlerini konumlandırma
   var layout = this;
   this.network.vertexes.each(function (v) {
     if (v.node === null) return;
-    if (!v.node.isLinkLabel) return;
+    if (!v.node.isLinkLabel) return; // Eğer düğüm bir etiketse
     var labnode = v.node;
     var lablink = labnode.labeledLink;
-    // In case the spouses are not actually moved, we need to have the marriage link
-    // position the label node, because LayoutVertex.commit() was called above on these vertexes.
-    // Alternatively we could override LayoutVetex.commit to be a no-op for label node vertexes.
+
+    // Evlilik bağlantısı etiketi düğümünü konumlandırma
     lablink.invalidateRoute();
     var spouseA = lablink.fromNode;
     var spouseB = lablink.toNode;
-    // prefer fathers on the left, mothers on the right
+
+    // Babaların solda, annelerin sağda olmasını tercih et
     if (spouseA.data.s === "F") {
-      // sex is female
       var temp = spouseA;
       spouseA = spouseB;
-      spouseB = temp;
+      spouseB = temp; // Cinsiyet erkekse eşleri değiştir
     }
-    // see if the parents are on the desired sides, to avoid a link crossing
+
+    // Ebeveynlerin istenilen tarafta olup olmadığını kontrol et
     var aParentsNode = layout.findParentsMarriageLabelNode(spouseA);
     var bParentsNode = layout.findParentsMarriageLabelNode(spouseB);
     if (
@@ -695,16 +647,19 @@ GenogramLayout.prototype.commitNodes = function () {
       bParentsNode !== null &&
       aParentsNode.position.x > bParentsNode.position.x
     ) {
-      // swap the spouses
       var temp = spouseA;
       spouseA = spouseB;
-      spouseB = temp;
+      spouseB = temp; // Ebeveynlerin konumlarına göre eşleri yer değiştir
     }
+
+    // Eşlerin pozisyonlarını ayarla
     spouseA.position = new go.Point(v.x, v.y);
     spouseB.position = new go.Point(
       v.x + spouseA.actualBounds.width + layout.spouseSpacing,
       v.y
     );
+
+    // Opaklık sıfırsa, konumu ayarla
     if (spouseA.opacity === 0) {
       var pos = new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
       spouseA.position = pos;
@@ -715,16 +670,17 @@ GenogramLayout.prototype.commitNodes = function () {
       spouseB.position = pos;
     }
   });
-  // position only-child nodes to be under the marriage label node
+
+  // Sadece bir çocuğu olan düğümleri evlilik etiketi düğümünün altına yerleştir
   this.network.vertexes.each(function (v) {
     if (v.node === null || v.node.linksConnected.count > 1) return;
     var mnode = layout.findParentsMarriageLabelNode(v.node);
     if (mnode !== null && mnode.linksConnected.count === 1) {
-      // if only one child
       var mvert = layout.network.findVertex(mnode);
       var newbnds = v.node.actualBounds.copy();
       newbnds.x = mvert.centerX - v.node.actualBounds.width / 2;
-      // see if there's any empty space at the horizontal mid-point in that layer
+      
+      // Yeni alanı kontrol et, başka bir obje var mı?
       var overlaps = layout.diagram.findObjectsIn(
         newbnds,
         function (x) {
@@ -736,37 +692,40 @@ GenogramLayout.prototype.commitNodes = function () {
         true
       );
       if (overlaps.count === 0) {
-        v.node.move(newbnds.position);
+        v.node.move(newbnds.position); // Alan boşsa, düğümü yeni pozisyona taşı
       }
     }
   });
 };
 
+// Ebeveynlerin evlilik etiket düğümünü bulma
 GenogramLayout.prototype.findParentsMarriageLabelNode = function (node) {
   var it = node.findNodesInto();
   while (it.next()) {
     var n = it.value;
-    if (n.isLinkLabel) return n;
+    if (n.isLinkLabel) return n; // Etiket düğümü bulundu
   }
-  return null;
+  return null; // Etiket bulunamadıysa null döndür
 };
 
+// Model değişikliğini işleyen fonksiyon
 function handleModelChange(e) {
-  console.log(e);
+  console.log(e); // Değişiklik bilgilerini konsola yazdır
 }
 
+// Genogram bileşeni
 const Genogram = (props) => {
-  genoData = props.Genogram;
+  genoData = props.Genogram; // Genogram verisini al
 
   return (
     <div id="genogram">
       <ReactDiagram
-        initDiagram={initDiagram}
+        initDiagram={initDiagram} // Diyagramı başlat
         divClassName="diagram-component"
-        onModelChange={handleModelChange}
+        onModelChange={handleModelChange} // Model değişikliğini işleyen fonksiyonu ata
       />
     </div>
   );
 };
 
-export default Genogram;
+export default Genogram; // Genogram bileşenini dışa aktar
