@@ -6,9 +6,9 @@ import './App.css';
 const genoData = [
     { key: 0, n: "bbbbbb", s: "M", m: -10, f: -11, ux: 1, a: ["C", "F", "K"] },
     { key: 1, n: "aliosman", s: "F", m: -12, f: -13, a: ["B", "H", "K"] },
-    { key: 2, n: "Boooooooob", s: "M", m: 1, f: 0, ux: 3, a: ["C", "H", "L"] },
+    { key: 2, n: "Bb", s: "M", m: 1, f: 0, ux: 3, a: ["C", "H", "L"] },
     { key: 3, n: "bekir", s: "F", a: ["C"] },
-    { key: 4, n: "Bill", s: "M", m: 1, f: 0, ux: 5, a: ["E", "H"] },
+    { key: 4, n: "Bill gates", s: "M", m: 1, f: 0, ux: 5, a: ["E", "H"] },
     { key: 5, n: "Brooke", s: "F", a: ["B", "H", "L"] },
     { key: 6, n: "Claire", s: "F", m: 1, f: 0, a: ["C"] },
     { key: 7, n: "Carol", s: "F", m: 1, f: 0, a: ["C", "I"] },

@@ -3,13 +3,16 @@ import React, { Component } from "react";
 import * as go from "gojs";
 import { ReactDiagram } from "gojs-react";
 
+// Diyagramdaki model değişikliklerini konsola yazdırır
 function handleModelChange(e) {
   console.log(e);
 }
 
+// Ana diyagram oluşturma ve özelliklerini ayarlama fonksiyonu
 function initDiagram() {
   const $ = go.GraphObject.make;
   go.Diagram.licenseKey = "adsfewfwaefasdfdsfs";
+  // Temel diyagram ayarları (geri alma özelliği ve otomatik ölçeklendirme)
   const diagram = $(
     go.Diagram,
 
@@ -23,13 +26,16 @@ function initDiagram() {
     }
   );
 
+  // Özel şekiller için geometri tanımlamaları
   var tlarc = go.Geometry.parse("F M20 20 B 180 90 20 20 19 19 z");
   var trarc = go.Geometry.parse("F M20 20 B 270 90 20 20 19 19 z");
   var blarc = go.Geometry.parse("F M20 20 B 90 90 20 20 19 19 z");
 
+  // İkiz bağlantıları için çizgi geometrileri
   var rLine = go.Geometry.parse("M -50 -95 l -50 -55");
   var lLine = go.Geometry.parse("M 50 -95 l 50 -55");
 
+  // Başlık ekleme
   diagram.add(
     $(
       go.Part,
@@ -46,6 +52,7 @@ function initDiagram() {
     )
   );
 
+  // Temel dikdörtgen sembol
   diagram.add(
     $(
       go.Part,
@@ -65,6 +72,7 @@ function initDiagram() {
     )
   );
 
+  // Sağ üst köşesi işaretli dikdörtgen
   diagram.add(
     $(
       go.Part,
@@ -92,6 +100,7 @@ function initDiagram() {
     )
   );
 
+  // Sol alt köşesi işaretli dikdörtgen
   diagram.add(
     $(
       go.Part,
@@ -118,6 +127,8 @@ function initDiagram() {
       )
     )
   );
+
+  // Artı işaretli dikdörtgen
   diagram.add(
     $(
       go.Part,
@@ -144,6 +155,7 @@ function initDiagram() {
     )
   );
 
+  // X işaretli dikdörtgen
   diagram.add(
     $(
       go.Part,
@@ -164,6 +176,7 @@ function initDiagram() {
     )
   );
 
+  // Sol çizgili daire
   diagram.add(
     $(
       go.Part,
@@ -189,6 +202,7 @@ function initDiagram() {
     )
   );
 
+  // Düşük sembolü
   diagram.add(
     $(
       go.Part,
@@ -213,6 +227,7 @@ function initDiagram() {
     )
   );
 
+  // Erkek sembolü
   diagram.add(
     $(
       go.Part,
@@ -236,6 +251,7 @@ function initDiagram() {
     )
   );
 
+  // Kadın sembolü
   diagram.add(
     $(
       go.Part,
@@ -259,7 +275,7 @@ function initDiagram() {
     )
   );
 
-  // second column
+  // Kanser geçmişi olmayan sembol
   diagram.add(
     $(
       go.Part,
@@ -283,6 +299,7 @@ function initDiagram() {
     )
   );
 
+  // Tek taraflı meme kanseri sembolü
   diagram.add(
     $(
       go.Part,
@@ -314,6 +331,7 @@ function initDiagram() {
     )
   );
 
+  // Akciğer kanseri sembolü
   diagram.add(
     $(
       go.Part,
@@ -345,6 +363,7 @@ function initDiagram() {
     )
   );
 
+  // Yumurtalık kanseri sembolü
   diagram.add(
     $(
       go.Part,
@@ -384,6 +403,7 @@ function initDiagram() {
     )
   );
 
+  // Lenfoma/Lösemi sembolü
   diagram.add(
     $(
       go.Part,
@@ -414,6 +434,7 @@ function initDiagram() {
     )
   );
 
+  // Vefat sembolü
   diagram.add(
     $(
       go.Part,
@@ -438,6 +459,7 @@ function initDiagram() {
     )
   );
 
+  // İkiz kız çocukları sembolü
   diagram.add(
     $(
       go.Part,
@@ -470,6 +492,7 @@ function initDiagram() {
   return diagram;
 }
 
+// Diyagramı gösteren React bileşeni
 const Explain = () => {
   return (
     <div id="explain">
