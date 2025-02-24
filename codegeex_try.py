@@ -28,7 +28,8 @@ Each individual in the family must include the following attributes:
 name (string): Full name of the person.
 gender (string): Male or female (if unknown, use "unknown").
 marital_status (string): Single, married, or widowed.
-alive (boolean): True if the person is alive, false if deceased.
+alive (boolean): True if the person is alivdeactivate
+e, false if deceased.
 health_status (string): Healthy, diabetic (DM patient), or unknown (if unknown, use "unknown").
 notes (string): Any additional information or comments.
 For all instances where children are mentioned (e.g., "Mehmet and Meryem have 4 children"), include four children with placeholder values. Do not use comment-style explanations like "4 children to be added here". Instead, add entries for each child with default values where the details are unknown. The gender, health status, and names can be set as "unknown" where necessary.
