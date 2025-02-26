@@ -4,40 +4,31 @@ import Explain from './components/Explain.js';
 import './App.css';
 
   const genoData = [
-    //Merkez Kişi
-    {"key": 0, "n": "Ayşe", "s": "F", "m": -1, "f": -2, "vir": 1, "a": []},
-
-    //Ebeveynler
-    {"key": -1, "n": "Fatma", "s": "F", "m": -21, "f": -22, "ux": -2, "a": []},
-    {"key": -2, "n": "Ali", "s": "M", "m": -23, "f": -24, "ux": -1, "a": ["H"]},
-
-   //Büyükanne/Büyükbabalar
-    {"key": -21, "n": "Zehra", "s": "F", "vir": -22, "a": ["C"]},
-    {"key": -22, "n": "Ahmet", "s": "M", "ux": -21, "a": ["M"]},
-    {"key": -23, "n": "Hatice", "s": "F", "vir": -24, "a": []},
-    {"key": -24, "n": "Mehmet", "s": "M", "ux": -23, "a": ["S"]},
-
-    // Teyzeler/Amcalar
-    {"key": -3, "n": "Aysel", "s": "F", "m": -21, "f": -22, "ux": 1000, "a": ["C"]},
-    {"key": 1000, "n": "Hasan", "s": "M", "vir": -3, "a": []},
-    {"key": -5, "n": "Mustafa", "s": "M", "m": -23, "f": -24, "ux": 2000, "a": ["H"]},
-    {"key": 2000, "n": "Fatma", "s": "F", "vir": -5, "a": []},
-
-    // Kardeşler
-    {"key": 2, "n": "Zeynep", "s": "F", "m": -1, "f": -2, "a": ["I"]},
-    {"key": 3, "n": "Murat", "s": "M", "m": -1, "f": -2, "ux": 3000, "a": []},
-    {"key": 4, "n": "Mesut", "s": "M", "m": -1, "f": -2, "a": []},
-    {"key": 3000, "n": "Merve", "s": "F", "vir": 3, "a": []},
-
-    // Yeğenler
-    {"key": 5, "n": "Sude", "s": "F", "vir": 4000, "m": 2, "f": 4000, "a": []},
-    {"key": 4000, "n": "Mehmet", "s": "M", "ux": 2, "a": []},
-    {"key": 6, "n": "Aslı", "s": "F", "m": -5, "f": 2000, "a": []},
-    {"key": 7, "n": "Ali", "s": "M", "m": -3, "f": 1000, "a": []},
-
-    // Çocuklar
-    {"key": 8, "n": "Elif", "s": "F", "m": 0, "f": 1, "a": []},
-    {"key": 9, "n": "Düşük", "s": "N", "m": 0, "f": 1, "a": []}
+    {
+        "familyTree": [
+          {"key": 0, "n": "Ayşe", "s": "F", "a": [], "m": -1, "f": -2, "vir": 1},
+          {"key": 1, "n": "Ahmet", "s": "M", "a": [],  "ux": 0},
+          {"key": -1, "n": "Fatma", "s": "F", "a": [], "m": -21, "f": -22, "ux": -2},
+          {"key": -2, "n": "Ali", "s": "M", "a": ["H", "S"], "m": -23, "f": -24, "ux": -1},
+          {"key": -21, "n": "Zehra", "s": "F", "a": ["C", "S"],  "vir": -22},
+          {"key": -22, "n": "Ahmet", "s": "M", "a": ["M", "S"],  "ux": -21},
+          {"key": -23, "n": "Hatice", "s": "F", "a": [],   "vir": -24},
+          {"key": -24, "n": "Mehmet", "s": "M", "a": ["S"], "ux": -23},
+          {"key": 2, "n": "Zeynep", "s": "F", "a": ["I"], "m": -1, "f": -2, "vir": 11},
+          {"key": 3, "n": "Murat", "s": "M", "a": [], "m": -1, "f": -2, "ux": 12, "t": "d"},
+          {"key": 4, "n": "Mesut", "s": "M", "a": [], "m": -1, "f": -2,  "t": "d"},
+          {"key": 5, "n": "Elif", "s": "F", "a": [], "m": 0, "f": 1},
+          {"key": 11, "n": "Mehmet", "s": "M", "a": [],   "ux": 2},
+          {"key": 12, "n": "Merve", "s": "F", "a": ["H", "S"],   "vir": 3},
+          {"key": 13, "n": "Sude", "s": "F", "a": [], "m": 2, "f": 11},
+          {"key": 14, "n": "Ahmet", "s": "M", "a": [], "m": 12, "f": 3},
+          {"key": -3, "n": "Aysel", "s": "F", "a": ["C"], "m": -21, "f": -22, },
+          {"key": -5, "n": "Mustafa", "s": "M", "a": ["H"], "m": -23, "f": -24, },
+          {"key": 15, "n": "Ali", "s": "M", "a": [], "m": -3, },
+          {"key": 16, "n": "Aslı", "s": "F", "a": [], "m": -5, }
+        ]
+        }
+    
 ]
 
 

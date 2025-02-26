@@ -89,7 +89,7 @@ Hasta: Evet, eşim Ahmet 37 yaşında. İki çocuğumuz var. Kızımız Elif 10 
 
 Doktor: Ablalarınız veya kardeşlerinizin çocukları var mı?
 
-Hasta: Ablam Zeynep'in eşi Mehmet, 40 yaşında. Bir kızları var, Sude 12 yaşında. İkiz kardeşlerimden Murat'ın eşi Merve, henüz çocukları yok. Mesut ise bekâr.
+Hasta: Ablam Zeynep'in eşi Mehmet, 40 yaşında. Bir kızları var, Sude 12 yaşında. İkiz kardeşlerimden Murat'ın eşi Merve akciğer kanseri ve bir tane erkek çocukları var, ismi ahmet. Mesut ise bekâr.
 
 Doktor: Teyzelerinizin veya amcalarınızın çocukları?
 
