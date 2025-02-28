@@ -1,8 +1,6 @@
 import google.generativeai as genai
 import os
 
-
-
 # API anahtarını ayarlayın
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyDTO2JGg-TfLYndDNmDCaQz3VPv6S5bYBA'  # API anahtarınızı buraya yazın
 

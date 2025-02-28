@@ -63,7 +63,7 @@ try:
         print("\nSoy ağacı için çıkarılan bilgiler:")
         print(family_info)
 
-    if __name__ == "__main__":
+    if _name_ == "_main_":
         print("Program main bloğuna girdi")
         # Test için örnek metin
         test_text = """

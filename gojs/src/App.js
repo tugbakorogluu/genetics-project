@@ -3,7 +3,6 @@ import Genogram from "./components/Genogram.js";
 import Explain from "./components/Explain.js";
 import "./App.css";
 
-
 // Örnek soy ağacı verisi - API'den veri yüklenene kadar kullanılır
 const defaultGenoData = [];
 
