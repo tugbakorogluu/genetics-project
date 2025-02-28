@@ -1,46 +1,108 @@
-import React, { useEffect } from 'react';
-import Genogram from './components/Genogram.js';
-import Explain from './components/Explain.js';
-import './App.css';
-
-  const genoData = [
-    {
-        "familyTree": [
-          {"key": 0, "n": "Ayşe", "s": "F", "a": [], "m": -1, "f": -2, "vir": 1},
-          {"key": 1, "n": "Ahmet", "s": "M", "a": [],  "ux": 0},
-          {"key": -1, "n": "Fatma", "s": "F", "a": [], "m": -21, "f": -22, "ux": -2},
-          {"key": -2, "n": "Ali", "s": "M", "a": ["H", "S"], "m": -23, "f": -24, "ux": -1},
-          {"key": -21, "n": "Zehra", "s": "F", "a": ["C", "S"],  "vir": -22},
-          {"key": -22, "n": "Ahmet", "s": "M", "a": ["M", "S"],  "ux": -21},
-          {"key": -23, "n": "Hatice", "s": "F", "a": [],   "vir": -24},
-          {"key": -24, "n": "Mehmet", "s": "M", "a": ["S"], "ux": -23},
-          {"key": 2, "n": "Zeynep", "s": "F", "a": ["I"], "m": -1, "f": -2, "vir": 11},
-          {"key": 3, "n": "Murat", "s": "M", "a": [], "m": -1, "f": -2, "ux": 12, "t": "d"},
-          {"key": 4, "n": "Mesut", "s": "M", "a": [], "m": -1, "f": -2,  "t": "d"},
-          {"key": 5, "n": "Elif", "s": "F", "a": [], "m": 0, "f": 1},
-          {"key": 11, "n": "Mehmet", "s": "M", "a": [],   "ux": 2},
-          {"key": 12, "n": "Merve", "s": "F", "a": ["H", "S"],   "vir": 3},
-          {"key": 13, "n": "Sude", "s": "F", "a": [], "m": 2, "f": 11},
-          {"key": 14, "n": "Ahmet", "s": "M", "a": [], "m": 12, "f": 3},
-          {"key": -3, "n": "Aysel", "s": "F", "a": ["C"], "m": -21, "f": -22, },
-          {"key": -5, "n": "Mustafa", "s": "M", "a": ["H"], "m": -23, "f": -24, },
-          {"key": 15, "n": "Ali", "s": "M", "a": [], "m": -3, },
-          {"key": 16, "n": "Aslı", "s": "F", "a": [], "m": -5, }
-        ]
-        }
-    
-]
+import React, { useState, useEffect } from "react";
+import Genogram from "./components/Genogram.js";
+import Explain from "./components/Explain.js";
+import "./App.css";
 
 
+// Örnek soy ağacı verisi - API'den veri yüklenene kadar kullanılır
+const defaultGenoData = [];
 
 const App = () => {
- 
-    return (
-        <div className="App" style={{marginTop: '-70px'}}>
-            <Explain />
-            <Genogram Genogram={genoData} />
-        </div>
-    )
-}
+  const [genoData, setGenoData] = useState(defaultGenoData);
+  const [dialogText, setDialogText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Diyalog metin alanı değişikliğini işle
+  const handleInputChange = (e) => {
+    setDialogText(e.target.value);
+  };
+
+  // Promise tabanlı yaklaşım (async/await olmadan)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    // Gerçek genogram API'sini kullan
+    fetch("http://localhost:8000/api/genogram", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ conversation: dialogText }),
+    })
+      .then((response) => {
+        console.log("API yanıtı:", response.status);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Alınan veri:", data);
+        if (data.success) {
+          console.log("Soy ağacı verisi:", data.genoData);
+          setGenoData(data.genoData);
+        } else {
+          setError(data.error || "Beklenmeyen bir hata oluştu");
+          console.error("API Hatası:", data);
+        }
+      })
+      .catch((err) => {
+        console.error("Hata detayı:", err);
+        setError("Sunucu bağlantısında bir hata oluştu: " + err.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  return (
+    <div className="App">
+      <div
+        className="input-container"
+        style={{ marginBottom: "20px", padding: "20px" }}
+      >
+        <h2>Soy Ağacı Oluşturma</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="dialogText">Doktor-Hasta Diyaloğu:</label>
+            <textarea
+              id="dialogText"
+              rows="10"
+              value={dialogText}
+              onChange={handleInputChange}
+              placeholder="Doktor ve hasta arasındaki diyaloğu buraya girin..."
+              style={{ width: "100%", marginBottom: "10px" }}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading || !dialogText.trim()}
+            style={{
+              padding: "8px 15px",
+              backgroundColor: "#4682B4",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor:
+                isLoading || !dialogText.trim() ? "not-allowed" : "pointer",
+            }}
+          >
+            {isLoading ? "İşleniyor..." : "Soy Ağacı Oluştur"}
+          </button>
+        </form>
+        {error && (
+          <div style={{ color: "red", marginTop: "10px" }}>Hata: {error}</div>
+        )}
+      </div>
+
+      <div style={{ marginTop: "20px" }}>
+        {" "}
+        {/* Negatif margin değerini düzelttim */}
+        <Explain />
+        <Genogram Genogram={genoData} />
+      </div>
+    </div>
+  );
+};
 
 export default App;
