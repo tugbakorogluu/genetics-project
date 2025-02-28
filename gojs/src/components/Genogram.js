@@ -719,8 +719,15 @@ function handleModelChange(e) {
 const Genogram = (props) => {
   genoData = props.Genogram; // Genogram verisini al
 
+  // GenoData'nın boş olup olmadığını kontrol et
+  if (!genoData || genoData.length === 0) {
+    return <div>Henüz soyağacı verisi yok.</div>; // Boşsa bir mesaj göster
+  }
+
+  console.log("GenoData:", genoData); // GenoData'yı konsola yazdır
+
   return (
-    <div id="genogram">
+    <div id="genogram" style={{ height: '100%', width: '100%' }}>
       <ReactDiagram
         initDiagram={initDiagram} // Diyagramı başlat
         divClassName="diagram-component"

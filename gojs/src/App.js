@@ -32,21 +32,17 @@ const App = () => {
       body: JSON.stringify({ conversation: dialogText }),
     })
       .then((response) => {
-        console.log("API yanıtı:", response.status);
         return response.json();
       })
       .then((data) => {
-        console.log("Alınan veri:", data);
+        console.log("API Yanıtı:", data); // Yanıtı konsola yazdır
         if (data.success) {
-          console.log("Soy ağacı verisi:", data.genoData);
           setGenoData(data.genoData);
         } else {
           setError(data.error || "Beklenmeyen bir hata oluştu");
-          console.error("API Hatası:", data);
         }
       })
       .catch((err) => {
-        console.error("Hata detayı:", err);
         setError("Sunucu bağlantısında bir hata oluştu: " + err.message);
       })
       .finally(() => {
