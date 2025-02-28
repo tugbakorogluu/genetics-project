@@ -7,7 +7,7 @@ try:
     print("Program başlatılıyor...")
     
     # Initialize Gemini
-    GOOGLE_API_KEY = "AIzaSyB-DjeZ7FbyArtUI7O0bdPPeFlWpBAqZ6U"  # Replace with your actual API key
+    GOOGLE_API_KEY = ""  # Replace with your actual API key
     print("Gemini API anahtarı yapılandırılıyor...")
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-pro')
