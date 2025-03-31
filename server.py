@@ -17,7 +17,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # API anahtarını ayarla
 # Güvenlik için bunu .env dosyasından veya ortam değişkeninden almanız tavsiye edilir
-API_KEY = 'AIzaSyDTO2JGg-TfLYndDNmDCaQz3VPv6S5bYBA'
+API_KEY = 'Kendi api keyinizi giriniz.'
 
 try:
     genai.configure(api_key=API_KEY)
