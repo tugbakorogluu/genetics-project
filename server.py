@@ -17,7 +17,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # API anahtarını ayarla
 # Güvenlik için bunu .env dosyasından veya ortam değişkeninden almanız tavsiye edilir
-API_KEY = 'AIzaSyDTO2JGg-TfLYndDNmDCaQz3VPv6S5bYBA'
+API_KEY = 'AIzaSyC57EqjoxHHrZPMSkTvs2Gl4e9fSsf_DSc'
 
 try:
     genai.configure(api_key=API_KEY)
@@ -156,7 +156,7 @@ def generate_genogram():
         try:
             # API yanıtını almayı dene
             logger.info("Gemini API'ye istek gönderiliyor...")
-            model = genai.GenerativeModel(model_name='gemini-1.5-pro')  
+            model = genai.GenerativeModel(model_name='gemini-1.5-flash')  
             response = model.generate_content(prompt)
             
             # Yanıtı temizle ve JSON'a dönüştür 

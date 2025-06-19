@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 
 # API anahtarını ayarlayın
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyDTO2JGg-TfLYndDNmDCaQz3VPv6S5bYBA'  # API anahtarınızı buraya yazın
+os.environ['GOOGLE_API_KEY'] = 'AIzaSyC57EqjoxHHrZPMSkTvs2Gl4e9fSsf_DSc'  # API anahtarınızı buraya yazın
 
 # Modeli yapılandırın
 genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
@@ -11,7 +11,7 @@ genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
 
 # Gemini Pro modeline erişim
 # Güncel modeli kullanın
-model = genai.GenerativeModel(model_name='gemini-1.5-pro')  
+model = genai.GenerativeModel(model_name='gemini-1.5-flash')  
 
 # veya
 # model = genai.GenerativeModel(model_name='gemini-1.5-flash')
